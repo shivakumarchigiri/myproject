@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: fbcont
-          image: shivakumarchigiri/cicd:tag
+          image: shivakumarchigiri/cicd:6
           ports:
             - containerPort: 8080
 
