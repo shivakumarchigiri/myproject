@@ -1,6 +1,6 @@
 [
   {
-    "Target": "devopshubg333/batch14:5 (ubuntu 24.04)",
+    "Target": "shivakumarchigiri/cicd:5 (ubuntu 24.04)",
     "Type": "ubuntu"
   },
   {
@@ -40,7 +40,7 @@
     "Type": "jar"
   },
   {
-    "Target": "usr/local/tomcat/lib/ecj-4.33.jar",
+    "Target": "usr/local/tomcat/lib/ecj-4.36.jar",
     "Type": "jar"
   },
   {
@@ -48,7 +48,7 @@
     "Type": "jar"
   },
   {
-    "Target": "usr/local/tomcat/lib/jakartaee-migration-1.0.8-shaded.jar",
+    "Target": "usr/local/tomcat/lib/jakartaee-migration-1.0.9-shaded.jar",
     "Type": "jar"
   },
   {
