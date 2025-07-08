@@ -1,16 +1,14 @@
 pipeline {
     agent any
 
-   tools{
-       maven 'maven3'  
-   }
+   
 
     stages {
        
         stage('git checkout') {
             steps {
                 echo 'Cloning GIT HUB Repo '
-				git branch: 'main', url: 'https://github.com/devopstraininghub/mindcircuit14.git'
+				git branch: 'main', url: 'https://github.com/shivakumarchigiri/myproject.git'
             }  
         }
 		
@@ -21,8 +19,8 @@ pipeline {
                 sh 'ls -ltrh'
                 
                 sh ''' mvn sonar:sonar \\
-                      -Dsonar.host.url=http://54.147.225.123:9000 \\
-                      -Dsonar.login=squ_b511ba40dcf78c0beeca7dc8e3375b1304ddbe5a'''
+                      -Dsonar.host.url=http://ec2-13-221-91-168.compute-1.amazonaws.com:9000 \\
+                      -Dsonar.login=squ_4a07d34900aa079d92c07dd689c53cdb6d34b73a'''
             }
     	}
 		
@@ -36,7 +34,7 @@ pipeline {
         stage('Docker Image') {
             steps {
                 echo 'Docker Image'
-				sh 'docker build -t devopshubg333/batch14:${BUILD_NUMBER} -f Dockerfile .'
+				sh 'docker build -t shivakumarchigiri/cicd:${BUILD_NUMBER} -f Dockerfile .'
             }
         }
 		
@@ -44,19 +42,19 @@ pipeline {
 		 stage('Docker Image Scan') {
             steps {
                 echo 'Docker Image scan'
-				sh "trivy image --format json --output results.json devopshubg333/batch14:${BUILD_NUMBER}"
+				sh "trivy image --format json --output results.json shivakumarchigiri/cicd:${BUILD_NUMBER}"
             }
         }
 		
         stage('Push to Dockerhub') {
             steps {
 			 script {
-			withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
+			withCredentials([string(credentialsId: 'Dockerhub', variable: 'Dockerhub')]) {
 			
-            sh 'docker login -u devopshubg333 -p ${dockerhub}'
+            sh 'docker login -u shivakumarchigiri  -p ${Dockerhub}'
 			
 			 }
-			   sh 'docker push devopshubg333/batch14:${BUILD_NUMBER}'
+			   sh 'docker push shivakumarchigiri/cicd:${BUILD_NUMBER}'
 			   
                 echo 'Pushed to Dockerhub'
 				}
@@ -64,12 +62,12 @@ pipeline {
             }
         }
         
-      
+        
         stage('Update Deployment File') {
 		
 		 environment {
-            GIT_REPO_NAME = "mindcircuit14"
-            GIT_USER_NAME = "devopstraininghub"
+            GIT_REPO_NAME = "myproject"
+            GIT_USER_NAME = "shivakumarchigiri"
         }
 		
             steps {
@@ -77,10 +75,10 @@ pipeline {
 				withCredentials([string(credentialsId: 'githubtoken', variable: 'githubtoken')]) 
 				{
                   sh '''
-                    git config user.email "gorekarmadhu@gmail.com"
-                    git config user.name "Madhu"
+                    git config user.email "chigirishivakumar@gmail.com"
+                    git config user.name "Shiva"
                     BUILD_NUMBER=${BUILD_NUMBER}
-					sed -i "s/batch14:.*/batch14:${BUILD_NUMBER}/g" deploymentfiles/deployment.yml
+					sed -i "s/cicd:.*/cicd:${BUILD_NUMBER}/g" deploymentfiles/deployment.yml
                     git add .
                     
                     git commit -m "Update deployment image to version ${BUILD_NUMBER}"
@@ -91,26 +89,10 @@ pipeline {
                  }
 				
             }
-        }		
+        		
 		
 
-    }
-		post {
-    always {
-        script {
-            if (currentBuild.result == 'SUCCESS') {
-                echo "Build #${env.BUILD_NUMBER} of ${env.JOB_NAME} succeeded."
-            }
-    			else (currentBuild.result == 'FAILURE') {
-                echo "Build #${env.BUILD_NUMBER} of ${env.JOB_NAME} failed."
-            } 
         }
+        
     }
 }
-	
-}
-
-
-
-
-        
